@@ -3,6 +3,7 @@ import { useUnmount } from "ahooks";
 import { ISprite } from "../../types/sprite";
 import { findParentByClass, getSpriteBBox } from "../../helper";
 import { marqueeDefaultProps } from "../../constant";
+import Move from "./move";
 
 interface IActiveSpriteContainerProps {
   store: {
@@ -79,6 +80,7 @@ const ActiveSpriteContainer = ({
         className="active-sprites-content"
         strokeWidth={3}
       ></rect>
+      <Move activeSprite={store.activeSprite} activeSpriteInfo={marqueeProps} />
     </g>
   );
 };
