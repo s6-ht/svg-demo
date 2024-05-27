@@ -1,11 +1,12 @@
 import {
   ForwardedRef,
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
 } from "react";
-import { ISprite, ISpriteMeta } from "./types/sprite";
+import { ICoordinate, ISprite, ISpriteMeta } from "./types/sprite";
 import { Stage } from "./stage";
 import { Sprite } from "./sprite";
 import ActiveSpriteContainer from "./edit/drag";
@@ -59,16 +60,37 @@ const GraphicEditorCore = (
     setActiveSprite(sprite);
   };
 
+  const updateSpriteCoordinate = (id: string, pos: ICoordinate) => {
+    const item = spriteList.find((item) => item.id === id);
+    if (item) {
+      setActiveSprite({
+        ...item,
+        attrs: {
+          ...item.attrs,
+          coordinate: pos,
+        },
+      });
+    }
+    setSpriteList((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          return { ...item, attrs: { ...item.attrs, coordinate: pos } };
+        }
+        return item;
+      })
+    );
+  };
+
   return (
     <Stage width={width} height={height}>
-      {spriteList.map((item) => {
+      {spriteList.map((item, index) => {
         const spriteMeta = registerSpriteMetaMap.current[item.type];
 
         const SpriteComponent = spriteMeta.spriteComponent as any;
 
         if (!SpriteComponent) return null;
         return (
-          <Sprite sprite={item} key={item.id}>
+          <Sprite sprite={item} key={`${item.id}-${index}`}>
             <SpriteComponent sprite={item} />
           </Sprite>
         );
@@ -81,6 +103,7 @@ const GraphicEditorCore = (
         }}
         apis={{
           updateActiveSprite,
+          updateSpriteCoordinate,
         }}
       />
     </Stage>

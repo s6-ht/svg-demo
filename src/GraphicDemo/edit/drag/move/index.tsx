@@ -2,38 +2,71 @@ import { useUnmount, useMount } from "ahooks";
 import { useRef } from "react";
 import { ICoordinate, ISprite, TSizeCoordinate } from "../../../types/sprite";
 import { marqueeDefaultProps } from "../../../constant";
+import { findParentByClass } from "../../../helper";
 
 interface IMoveProps {
   activeSprite?: ISprite;
   activeSpriteInfo?: TSizeCoordinate & { transform: string };
+  updateSpriteCoordinate: (id: string, pos: ICoordinate) => void;
 }
 
-const Move = ({ activeSpriteInfo, activeSprite }: IMoveProps) => {
+const Move = ({
+  activeSpriteInfo,
+  activeSprite,
+  updateSpriteCoordinate,
+}: IMoveProps) => {
   const { width, height, x, y } = activeSpriteInfo || marqueeDefaultProps;
-  const initialPos = useRef<ICoordinate>({
-    x: 0,
-    y: 0,
+
+  const initData = useRef({
+    id: "",
+    size: { width: 0, height: 0 },
+    offset: { x: 0, y: 0 },
   });
 
   const handleMouseMove = (e: MouseEvent) => {
-    // 获取到精灵 改变精灵的位置
+    const { pageX, pageY } = e;
+    const { offset, id } = initData.current;
+    const coordinate = {
+      x: pageX - offset.x,
+      y: pageY - offset.y,
+    };
+    // 更新
+    updateSpriteCoordinate(id, coordinate);
   };
 
   const handleMouseUp = () => {
-    //
+    document.removeEventListener("pointerdown", handleMouseDown, false);
+    document.removeEventListener("pointermove", handleMouseMove, false);
   };
 
   const handleMouseDown = (e: MouseEvent) => {
-    // 找到当前点击的元素的坐标
-    // 然后记录鼠标点击位置和精灵坐标的便宜
+    const spriteDom = findParentByClass(e.target, "sprite-container");
+    if (!spriteDom) {
+      return;
+    }
+    const spriteId = spriteDom.getAttribute("data-sprite-id");
 
+    if (!spriteId) return;
+
+    // 找到当前点击的元素的坐标
+    initData.current = {
+      id: spriteId,
+      size: {
+        width: activeSpriteInfo?.width || 0,
+        height: activeSpriteInfo?.height || 0,
+      },
+      offset: {
+        x: e.pageX - (activeSpriteInfo?.x || 0),
+        y: e.pageY - (activeSpriteInfo?.y || 0),
+      },
+    };
     // 添加move和up事件
     document.addEventListener("pointermove", handleMouseMove, false);
     document.addEventListener("pointerup", handleMouseUp, false);
   };
 
   useMount(() => {
-    document.addEventListener("pointerdown", handleMouseDown, false);
+    document.addEventListener("mousedown", handleMouseDown, false);
     document.addEventListener("pointerup", handleMouseUp, false);
   });
 
@@ -43,7 +76,7 @@ const Move = ({ activeSpriteInfo, activeSprite }: IMoveProps) => {
     document.removeEventListener("pointerup", handleMouseUp, false);
   });
 
-  if (!activeSprite) return;
+  if (!activeSprite) return null;
 
   return (
     <rect

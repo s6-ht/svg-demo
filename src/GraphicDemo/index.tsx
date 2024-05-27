@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import GraphicEditorCore, { IGraphicEditorCoreRef } from "./GraphicEditorCore";
 import { ISprite } from "./types/sprite";
 import rectSpriteMeta from "./sprites/Rect";
 import lineSpriteMeta from "./sprites/Line";
+import { useMount } from "ahooks";
 
 // 默认精灵列表
 const defaultSpriteList: ISprite[] = [
@@ -15,7 +16,7 @@ const defaultSpriteList: ISprite[] = [
     attrs: {
       coordinate: { x: 100, y: 100 },
       size: { width: 160, height: 100 },
-      angle: 30,
+      angle: 0,
     },
   },
   {
@@ -39,12 +40,15 @@ const defaultSpriteList: ISprite[] = [
 
 const GraphicDemo = () => {
   const graphicEditorRef = useRef<IGraphicEditorCoreRef>(null);
+  const inited = useRef(false);
 
-  useEffect(() => {
+  useMount(() => {
+    if (inited.current) return;
     graphicEditorRef.current?.registerSprite(rectSpriteMeta);
     graphicEditorRef.current?.registerSprite(lineSpriteMeta);
     graphicEditorRef.current?.addSpriteToStage(defaultSpriteList);
-  }, []);
+    inited.current = true;
+  });
 
   return <GraphicEditorCore ref={graphicEditorRef} width={800} height={600} />;
 };

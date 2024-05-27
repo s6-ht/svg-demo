@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useUnmount } from "ahooks";
-import { ISprite } from "../../types/sprite";
+import { ICoordinate, ISprite } from "../../types/sprite";
 import { findParentByClass, getSpriteBBox } from "../../helper";
 import { marqueeDefaultProps } from "../../constant";
 import Move from "./move";
+import Rotate from "./roation";
 
 interface IActiveSpriteContainerProps {
   store: {
@@ -12,6 +13,7 @@ interface IActiveSpriteContainerProps {
   };
   apis: {
     updateActiveSprite: (sprite?: ISprite) => void;
+    updateSpriteCoordinate: (id: string, pos: ICoordinate) => void;
   };
 }
 
@@ -33,7 +35,6 @@ const ActiveSpriteContainer = ({
       const id = spriteDom.getAttribute("data-sprite-id");
       if (id === store.activeSprite?.id) return;
       const selectedSprite = store.spriteList.find((item) => item.id === id);
-      console.log(id, "id");
       apis.updateActiveSprite(selectedSprite);
     },
     [apis, store.activeSprite?.id, store.spriteList]
@@ -80,7 +81,12 @@ const ActiveSpriteContainer = ({
         className="active-sprites-content"
         strokeWidth={3}
       ></rect>
-      <Move activeSprite={store.activeSprite} activeSpriteInfo={marqueeProps} />
+      <Move
+        activeSprite={store.activeSprite}
+        activeSpriteInfo={marqueeProps}
+        updateSpriteCoordinate={apis.updateSpriteCoordinate}
+      />
+      <Rotate activeSprite={store.activeSprite} />
     </g>
   );
 };
