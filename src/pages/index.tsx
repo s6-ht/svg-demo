@@ -1,19 +1,13 @@
-import { useEffect, useRef } from "react";
+import { Canvas } from "@/canvas";
+import { useEffect } from "react";
+import styles from "./index.less";
 
 export default function HomePage() {
-  const ref = useRef<SVGCircleElement>(null);
-
   useEffect(() => {
-    ref.current?.addEventListener("click", () => {
-      console.log("click");
+    new Canvas({
+      root: "svg-demo",
     });
   }, []);
 
-  return (
-    <div>
-      <svg width="200" height="200">
-        <circle ref={ref} id="myCircle" cx="100" cy="100" r="50" fill="blue" />
-      </svg>
-    </div>
-  );
+  return <div id="svg-demo" className={styles.container}></div>;
 }
