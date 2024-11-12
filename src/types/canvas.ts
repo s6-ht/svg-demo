@@ -1,6 +1,7 @@
 import { GlobalRuntime } from "@/manager/GlobalRuntime";
 import { IRenderer, RenderingPlugin, RenderingContext } from "./renderer";
 import { RenderingManager } from "@/manager/RenderingManager";
+import Camera from "@/camera/Camera";
 
 export interface CanvasConfig {
   root: string | HTMLElement;
@@ -11,6 +12,7 @@ export interface CanvasConfig {
 
 export interface ContextManager<Context> {
   init: () => void;
+  getContext: () => Context;
 }
 
 export interface CanvasContext {
@@ -24,6 +26,7 @@ export interface CanvasContext {
   renderingManager: RenderingManager;
   renderingContext: RenderingContext;
   instance: ICanvas;
+  camera: Camera;
 }
 
 export interface ICanvas {}

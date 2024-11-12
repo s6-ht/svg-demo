@@ -8,7 +8,7 @@ export class SVGContextManager extends AbstractRendererPlugin {
   name = "svg-context-register-plugin";
   private canvasConfig: Partial<CanvasConfig>;
   private $root: HTMLElement | null;
-  private $namespace: SVGElement | null;
+  private $namespace: SVGElement | null = null;
   private dpr = 1;
 
   constructor(public context: GlobalRuntime & CanvasConfig) {
@@ -53,6 +53,10 @@ export class SVGContextManager extends AbstractRendererPlugin {
       };
     }
     return size;
+  }
+
+  getContext() {
+    return this.$namespace;
   }
 
   destroy(): void {

@@ -11,6 +11,9 @@ importers:
       eventemitter3:
         specifier: ^5.0.1
         version: 5.0.1
+      gl-matrix:
+        specifier: ^3.4.3
+        version: 3.4.3
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -2366,6 +2369,9 @@ packages:
 
   git-hooks-list@3.1.0:
     resolution: {integrity: sha512-LF8VeHeR7v+wAbXqfgRlTSX/1BJR9Q1vEMR8JAz1cEg6GX07+zyj3sAdDvYjj/xnlIfVuGgj4qBei1K3hKH+PA==}
+
+  gl-matrix@3.4.3:
+    resolution: {integrity: sha512-wcCp8vu8FT22BnvKVPjXa/ICBWRq/zjFfdofZy1WSpQZpphblv12/bOQLBC1rMM7SGOFS9ltVmKOHil5+Ml7gA==}
 
   glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
@@ -7430,6 +7436,8 @@ snapshots:
       resolve-pkg-maps: 1.0.0
 
   git-hooks-list@3.1.0: {}
+
+  gl-matrix@3.4.3: {}
 
   glob-parent@5.1.2:
     dependencies:

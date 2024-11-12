@@ -1,5 +1,5 @@
 import { AbstractRendererPlugin } from "@/renderer/AbstractRendererPlugin";
-import { SVGRendererPlugin } from "./SvgRendererPlugin";
+import { SVGRendererPlugin } from "./SVGRendererPlugin";
 
 export class RenderPlugin extends AbstractRendererPlugin {
   name = "render-plugin";
@@ -14,6 +14,7 @@ export class RenderPlugin extends AbstractRendererPlugin {
         this.context
       )
     );
+
   }
 
   destroy() {
