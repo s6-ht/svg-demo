@@ -1,5 +1,7 @@
+import { Renderable } from "@/components/Renderable";
 import { BaseStyleProps, Shape } from "@/types/displayObject";
-import { isUndefined } from "lodash";
+
+let entityCounter = 0;
 
 export interface DisplayObjectConfig<styleProps> {
   id?: string;
@@ -17,12 +19,23 @@ export interface DisplayObjectConfig<styleProps> {
  * 销毁
  *
  */
-export class DisplayObject<
-  StyleProps extends BaseStyleProps = any,
-> extends Element {
-  constructor() {
-    super();
+export class DisplayObject<StyleProps extends BaseStyleProps = any> {
+  config: DisplayObjectConfig<StyleProps>;
+  nodeName: string;
+  renderable: Renderable = {};
+
+  entity = entityCounter++;
+  name: string | undefined = undefined;
+
+  constructor(config: DisplayObjectConfig<StyleProps>) {
+    this.config = config;
+    this.nodeName = this.config.type || Shape.GROUP;
+    this.name = this.config.name;
+
+    this.initAttributes();
   }
+
+  initAttributes() {}
 
   setAttribute() {}
 

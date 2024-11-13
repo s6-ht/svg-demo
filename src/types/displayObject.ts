@@ -90,5 +90,4 @@ export enum Shape {
   LINE = "line",
   PATH = "path",
   TEXT = "text",
-  IMAGE = "image",
 }

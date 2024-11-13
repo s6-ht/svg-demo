@@ -15,5 +15,7 @@ export class RenderingManager {
     private context: CanvasContext
   ) {}
 
-  public init(cb: () => void) {}
+  public init(cb: () => void) {
+    this.hooks.init.call({});
+  }
 }

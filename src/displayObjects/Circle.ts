@@ -1,5 +1,5 @@
-import { BaseStyleProps } from "@/types/displayObject";
-import { DisplayObject } from "./DisplayObject";
+import { BaseStyleProps, Shape } from "@/types/displayObject";
+import { DisplayObject, DisplayObjectConfig } from "./DisplayObject";
 
 export interface CircleStyle extends BaseStyleProps {
   cx: number;
@@ -8,5 +8,11 @@ export interface CircleStyle extends BaseStyleProps {
 }
 
 export class Circle extends DisplayObject<CircleStyle> {
-  constructor() {}
+  constructor({ style, ...rest }: DisplayObjectConfig<CircleStyle>) {
+    super({
+      type: Shape.CIRCLE,
+      style,
+      ...rest,
+    });
+  }
 }

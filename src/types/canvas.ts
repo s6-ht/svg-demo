@@ -2,6 +2,7 @@ import { GlobalRuntime } from "@/manager/GlobalRuntime";
 import { IRenderer, RenderingPlugin, RenderingContext } from "./renderer";
 import { RenderingManager } from "@/manager/RenderingManager";
 import Camera from "@/camera/Camera";
+import { DefaultElementLifeCycleContribution } from "@/renderer/utils/DefaultElementLifeCycleContribution";
 
 export interface CanvasConfig {
   root: string | HTMLElement;
@@ -27,6 +28,7 @@ export interface CanvasContext {
   renderingContext: RenderingContext;
   instance: ICanvas;
   camera: Camera;
+  SVGElementLifeCycleContribution: DefaultElementLifeCycleContribution;
 }
 
 export interface ICanvas {}

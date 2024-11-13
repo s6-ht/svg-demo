@@ -51,7 +51,7 @@ export class Canvas extends EventTarget {
   }
 
   private initRenderer(fullPaint: boolean) {
-    if (this.inited) return;
+    this.inited = false;
 
     this.context.renderer = new Renderer();
 
@@ -87,6 +87,7 @@ export class Canvas extends EventTarget {
 
   initRenderingManager(fullPaint: boolean, async = false) {
     this.context.renderingManager.init(() => {
+      // 初始化的回调执行完毕
       this.inited = true;
 
       if (fullPaint) {

@@ -6,6 +6,15 @@ export default function HomePage() {
   useEffect(() => {
     new Canvas({
       root: "svg-demo",
+      nodes: [
+        {
+          type: "rect",
+          style: {
+            width: 200,
+            height: 200,
+          },
+        },
+      ],
     });
   }, []);
 

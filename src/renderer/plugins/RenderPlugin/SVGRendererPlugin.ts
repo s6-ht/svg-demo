@@ -1,5 +1,6 @@
 import { DisplayObject } from "@/displayObjects/DisplayObject";
 import { ElementType } from "@/events/types";
+import { ElementSVG } from "@/renderer/components/ElementSVG";
 import { createSVGElement } from "@/renderer/utils/dom";
 import { ContextManager } from "@/types/canvas";
 import { RenderingPluginContext } from "@/types/renderer";
@@ -9,6 +10,8 @@ import { mat4 } from "gl-matrix";
 
 export class SVGRendererPlugin {
   private $camera: SVGElement | null = null;
+
+  private svgElementMap: WeakMap<SVGElement, DisplayObject> = new WeakMap();
 
   constructor(
     private pluginOptions: SVGRendererPluginOptions,
@@ -21,7 +24,9 @@ export class SVGRendererPlugin {
     const canvas = camera.canvas;
 
     const handleMounted = (e: Event) => {
-      const object = e.target;
+      const object = e.target as unknown as DisplayObject;
+
+      this.createSVGDom(object, this.$camera!);
     };
 
     renderingManager.hooks.init.tap(() => {
@@ -53,5 +58,40 @@ export class SVGRendererPlugin {
         rts[5]
       )},${numberToLongString(rts[12])},${numberToLongString(rts[13])})`
     );
+  }
+
+  createSVGDom(object: DisplayObject, root: SVGElement) {
+    // @ts-ignore
+    object.elementSVG = new ElementSVG();
+    // @ts-ignore
+    const svgElement = object.elementSVG;
+
+    // 创建一个元素 设置属性 添加到父元素
+
+    const $el = this.context.SVGElementLifeCycleContribution.createElement(
+      object,
+      this.svgElementMap
+    );
+
+    // 给元素添加id
+    if (this.pluginOptions.outputSVGElementId) {
+      $el.id = this.getId(object);
+    }
+
+    // 给元素添加name
+    if (this.pluginOptions.outputSVGElementName && object.name) {
+      $el.setAttribute("name", object.name);
+    }
+
+    // 保存svg元素
+    svgElement.$el = $el;
+
+    this.applyAttributes(object);
+  }
+
+  applyAttributes(object: DisplayObject) {}
+
+  getId(object: DisplayObject) {
+    return `g-svg-${object.entity}`;
   }
 }
