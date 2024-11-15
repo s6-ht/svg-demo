@@ -89,7 +89,22 @@ export class SVGRendererPlugin {
     this.applyAttributes(object);
   }
 
-  applyAttributes(object: DisplayObject) {}
+  applyAttributes(object: DisplayObject) {
+    // @ts-ignore
+    const elementSVG = object.elementSVG as ElementSVG;
+    const $el = elementSVG.$el;
+
+    if ($el) {
+      const { attributes } = $el;
+      $el.setAttribute("fill", "none");
+      this.updateAttribute(object, Object.keys(attributes));
+    }
+  }
+
+  updateAttribute(object: DisplayObject, attributes: string[]) {
+    // 检查属性是否需要更新
+    // 需要更新就把它设置到el上
+  }
 
   getId(object: DisplayObject) {
     return `g-svg-${object.entity}`;
