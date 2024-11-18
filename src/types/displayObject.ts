@@ -91,3 +91,56 @@ export enum Shape {
   PATH = "path",
   TEXT = "text",
 }
+
+export interface ParsedTransform {
+  t: string;
+  d: CSSUnitValue[];
+}
+
+export interface ParsedFilterStyleProperty {
+  name: string;
+  params: CSSUnitValue[];
+}
+
+export interface ParsedBaseStyleProps
+  extends Omit<
+    BaseStyleProps,
+    | "anchor"
+    | "fill"
+    | "stroke"
+    | "lineWidth"
+    | "increasedLineWidthForHitTesting"
+    | "lineDash"
+    | "path"
+    | "points"
+    | "shadowColor"
+    | "transform"
+    | "transformOrigin"
+    | "miterLimit"
+    | "filter"
+    | "opacity"
+    | "fillOpacity"
+    | "strokeOpacity"
+  > {
+  opacity?: number;
+  fillOpacity?: number;
+  strokeOpacity?: number;
+
+  fill?: string;
+  stroke?: string;
+  lineDash?: [number, number];
+
+  anchor?: [number, number, number];
+  transform: ParsedTransform[];
+  transformOrigin?: [CSSUnitValue, CSSUnitValue, CSSUnitValue];
+
+  lineWidth?: number;
+  increasedLineWidthForHitTesting?: number;
+  defX?: number;
+  defY?: number;
+  offsetX?: number;
+  offsetY?: number;
+  shadowColor?: string;
+  miterLimit?: number;
+  filter?: ParsedFilterStyleProperty[];
+}
