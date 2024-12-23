@@ -5,9 +5,10 @@ import Camera from "@/camera/Camera";
 import { DefaultElementLifeCycleContribution } from "@/renderer/utils/DefaultElementLifeCycleContribution";
 
 export interface CanvasConfig {
-  root: string | HTMLElement;
+  root: HTMLElement;
   width?: number;
   height?: number;
+  devicePixelRatio?: number;
   [key: string]: any;
 }
 

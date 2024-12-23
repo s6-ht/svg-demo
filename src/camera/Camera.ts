@@ -7,6 +7,10 @@ export enum CameraProjectionMode {
   ORTHOGRAPHIC,
 }
 
+/**
+ * 正交相机
+ * 设置相机位置 - 平移相机 - 设置相机视点 - 记录相机矩阵
+ */
 export default class Camera {
   canvas?: Canvas;
 
@@ -69,53 +73,7 @@ export default class Camera {
 
   setType(cameraType: CameraType) {
     this.type = cameraType;
-
     return this;
-  }
-
-  protected _getAxes() {
-    // FIXME: 查看right和up的值 是否和position一样
-    vec3.copy(
-      this.right,
-      createVec3(vec4.transformMat4(vec4.create(), [1, 0, 0, 0], this.matrix))
-    );
-    vec3.copy(
-      this.up,
-      createVec3(vec4.transformMat4(vec4.create(), [0, 1, 0, 0], this.matrix))
-    );
-    vec3.copy(
-      this.forward,
-      createVec3(vec4.transformMat4(vec4.create(), [0, 0, 1, 0], this.matrix))
-    );
-
-    // FIXME: 归一化的原因 在哪里用到吗？
-    vec3.normalize(this.right, this.right);
-    vec3.normalize(this.up, this.up);
-    vec3.normalize(this.forward, this.forward);
-  }
-
-  protected _getDistance() {
-    this.distanceVector = vec3.subtract(
-      vec3.create(),
-      this.focalPoint,
-      this.position
-    );
-    this.distance = vec3.length(this.distanceVector);
-    this.dollyingStep = this.distance / 100;
-  }
-
-  protected _getAngles() {
-    const [x, y, z] = this.distanceVector;
-    const r = vec3.length(this.distanceVector);
-
-    // FIXME:
-    if (this.rotateWorld) {
-      this.elevation = rad2deg(Math.asin(y / r));
-      this.azimuth = rad2deg(Math.atan2(-x, -z));
-    } else {
-      this.elevation = -rad2deg(Math.asin(y / r));
-      this.azimuth = -rad2deg(Math.atan2(-x, -z));
-    }
   }
 
   setPosition(x: number, y: number, z = 0) {
@@ -136,7 +94,9 @@ export default class Camera {
 
     const up = vec3.fromValues(0, 1, 0);
 
-    // 创建一个视图矩阵 用户定义相机在三维空间的位置和方向
+    // 创建一个视图矩阵, 定义相机在三维空间的位置和方向
+    // 简单来说, 这个矩阵表明相机能够"看向"指定的目标点(focalPoint)
+    // 相机的上方向由up决定
     const matrix = mat4.lookAt(
       mat4.create(),
       this.position,
@@ -144,15 +104,8 @@ export default class Camera {
       up
     );
 
-    // TODO: 调试这里的matrix
-
-    // 将视图矩阵转换为世界空间中的变换矩阵
+    // 将相机的视图矩阵转换为世界空间中的变换矩阵
     mat4.invert(this.matrix, matrix);
-
-    this._getAxes();
-    this._getDistance();
-    this._getAngles();
-
     return this;
   }
 
@@ -237,5 +190,9 @@ export default class Camera {
 
   getOrthoMatrix() {
     return this.orthoMatrix;
+  }
+
+  protected triggerUpdate() {
+    //TODO: 视锥体相关
   }
 }

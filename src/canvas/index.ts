@@ -1,6 +1,7 @@
 import { CameraType } from "@/camera/types";
 import { DisplayObject } from "@/displayObjects/DisplayObject";
 import { Group } from "@/displayObjects/Group";
+import { CanvasEvent } from "@/events/types";
 import { runtime } from "@/manager/GlobalRuntime";
 import { RenderingManager } from "@/manager/RenderingManager";
 import Renderer from "@/renderer/renderer";
@@ -8,25 +9,49 @@ import { CanvasConfig, CanvasContext } from "@/types/canvas";
 import { IRenderer } from "@/types/renderer";
 import { isString } from "lodash";
 
+/**
+ * 初始化相机 -- 渲染节点
+ */
 export class Canvas extends EventTarget {
   private inited = false;
   public context = {} as CanvasContext;
 
+  public document: Document;
   documentElement: Group | null = null;
+
+  public requestAnimationFrame: (callback: FrameRequestCallback) => number;
+
+  private readyPromise: Promise<any> | undefined;
+  private resolveReadyPromise: () => void;
 
   constructor(config: CanvasConfig) {
     super();
+    this.requestAnimationFrame = window.requestAnimationFrame;
 
-    this.context.config = config;
-    this.context.instance = this;
+    this.document = new Document();
+    this.documentElement = new Group({
+      id: "g-root",
+      style: {},
+    });
 
-    this.createRoot();
+    this.initRenderingContext(config);
+    // 初始化相机
     const { width, height } = this.getSize();
-
-    // 设置初始相机
     this.initDefaultCamera(width, height);
-
     this.initRenderer(true);
+  }
+
+  private initRenderingContext(mergedConfig: CanvasConfig) {
+    this.context.config = mergedConfig;
+    // FIXME:
+    this.context.renderingContext = {
+      root: this.documentElement,
+      renderListCurrFrame: [],
+      renderReasons: new Set(),
+      unculledEntities: [],
+      force: false,
+      dirty: false,
+    };
   }
 
   private initDefaultCamera(width: number, height: number) {
@@ -46,12 +71,12 @@ export class Canvas extends EventTarget {
         1000
       );
     camera.canvas = this;
-
     this.context.camera = camera;
   }
 
   private initRenderer(fullPaint: boolean) {
     this.inited = false;
+    this.readyPromise = undefined;
 
     this.context.renderer = new Renderer();
 
@@ -60,8 +85,6 @@ export class Canvas extends EventTarget {
     this.initRendererPlugins(this.context.renderer);
 
     this.initManager(fullPaint);
-
-    this.mountChildren(this.getRoot());
   }
 
   private initRendererPlugins(renderer: IRenderer) {
@@ -87,25 +110,40 @@ export class Canvas extends EventTarget {
 
   initRenderingManager(fullPaint: boolean, async = false) {
     this.context.renderingManager.init(() => {
-      // 初始化的回调执行完毕
+      // 插件初始化完成
       this.inited = true;
-
       if (fullPaint) {
+        this.requestAnimationFrame.call(window, () => {
+          const event = new CustomEvent(CanvasEvent.READY);
+          this.dispatchEvent(event);
+        });
+
+        // 暂时看不出来作用
+        if (this.readyPromise) {
+          this.resolveReadyPromise();
+        }
+      } else {
+        this.dispatchEvent(new CustomEvent(CanvasEvent.RENDERER_CHANGED));
+      }
+
+      const root = this.getRoot();
+      if (!fullPaint) {
+      }
+      if (root) {
+        this.mountChildren(root);
       }
     });
   }
 
   getContainer() {
-    return isString(this.context.config.root)
-      ? document.getElementById(this.context.config.root)
-      : this.context.config.root;
+    return this.context.config.root;
   }
 
   getSize() {
     const container = this.getContainer();
     return {
-      width: container?.clientWidth || 0,
-      height: container?.clientHeight || 0,
+      width: container.clientWidth || 0,
+      height: container.clientHeight || 0,
     };
   }
 
@@ -123,5 +161,20 @@ export class Canvas extends EventTarget {
 
   getRoot() {
     return this.documentElement;
+  }
+
+  get ready() {
+    if (!this.readyPromise) {
+      this.readyPromise = new Promise((resolve) => {
+        this.resolveReadyPromise = () => {
+          resolve(this);
+        };
+      });
+
+      if (this.inited) {
+        this.resolveReadyPromise();
+      }
+    }
+    return this.readyPromise;
   }
 }

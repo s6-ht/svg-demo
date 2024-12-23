@@ -7,7 +7,7 @@ export class SyncHook<T, R = void> {
     this.callbacks.push(fn);
   }
 
-  call(...args: AsArray<T>) {
+  call(...args: any) {
     this.callbacks.forEach((cb) => {
       cb(...args);
     });
