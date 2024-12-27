@@ -1,20 +1,11 @@
-import { Canvas } from "@/canvas";
 import { useEffect } from "react";
 import styles from "./index.less";
+import { Graph } from "@/ink-graph";
 
 export default function HomePage() {
   useEffect(() => {
-    new Canvas({
+    const graph = new Graph({
       root: "svg-demo",
-      nodes: [
-        {
-          type: "rect",
-          style: {
-            width: 200,
-            height: 200,
-          },
-        },
-      ],
     });
   }, []);
 
